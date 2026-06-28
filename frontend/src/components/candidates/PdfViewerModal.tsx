@@ -8,7 +8,7 @@ interface PdfViewerModalProps {
   onClose: () => void;
 }
 
-export function PdfViewerModal({ url, mimeType, title, onClose }: PdfViewerModalProps) {
+export function PdfViewerModal({ url, title, onClose }: PdfViewerModalProps) {
   if (!url) return null;
 
   return (

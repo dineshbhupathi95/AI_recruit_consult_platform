@@ -80,7 +80,7 @@ export const candidateService = {
     return data;
   },
 
-  async buildResume(applicationId: string, payload: BuildResumePayload = {}): Promise<ResumeVersion> {
+  async buildResume(applicationId: string, payload: BuildResumePayload): Promise<ResumeVersion> {
     const { data } = await apiClient.post<ResumeVersion>(
       `/applications/${applicationId}/build-resume`,
       payload
