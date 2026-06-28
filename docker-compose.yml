@@ -56,6 +56,7 @@ services:
       CELERY_BROKER_URL: redis://redis:6379/1
       CELERY_RESULT_BACKEND: redis://redis:6379/2
       MINIO_ENDPOINT: minio:9000
+      OLLAMA_BASE_URL: http://ollama:11434/v1
     ports:
       - "8000:8000"
     depends_on:
@@ -83,7 +84,22 @@ services:
     depends_on:
       - backend
 
+  ollama:
+    image: ollama/ollama:latest
+    profiles: ["ollama"]
+    ports:
+      - "11434:11434"
+    volumes:
+      - ollama_data:/root/.ollama
+    healthcheck:
+      test: ["CMD", "ollama", "list"]
+      interval: 15s
+      timeout: 10s
+      retries: 5
+      start_period: 30s
+
 volumes:
   postgres_data:
   redis_data:
   minio_data:
+  ollama_data:

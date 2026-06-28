@@ -1,5 +1,5 @@
-import { Briefcase, LayoutDashboard, LogOut, Moon, Sun, Users } from "lucide-react";
-import { Link, Outlet, useNavigate } from "react-router-dom";
+import { Building2, ClipboardList, FileText, LayoutDashboard, LogOut, Moon, Settings, Sun, Users } from "lucide-react";
+import { Link, Outlet, useLocation, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { authService } from "@/services/authService";
 import { useAuthStore } from "@/store/authStore";
@@ -8,14 +8,22 @@ import { useTheme } from "@/hooks/useTheme";
 
 const navItems = [
   { to: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
-  { to: "/clients", label: "Clients", icon: Briefcase, disabled: true },
-  { to: "/candidates", label: "Candidates", icon: Users, disabled: true },
+  { to: "/clients", label: "Clients", icon: Building2 },
+  { to: "/jobs", label: "Requirements", icon: ClipboardList },
+  { to: "/candidates", label: "Candidates", icon: Users },
+  { to: "/templates", label: "Templates", icon: FileText },
+  { to: "/settings", label: "Settings", icon: Settings, adminOnly: true },
 ];
 
 export function AppLayout() {
   const navigate = useNavigate();
+  const location = useLocation();
   const { user, tenant, refreshToken, clearAuth } = useAuthStore();
   const { theme, toggleTheme } = useTheme();
+
+  const permissions = user?.permissions ?? [];
+  const roles = user?.roles.map((r) => r.name) ?? [];
+  const isAdmin = roles.includes("admin") || permissions.includes("settings:read");
 
   const handleLogout = async () => {
     if (refreshToken) {
@@ -40,27 +48,26 @@ export function AppLayout() {
         </div>
 
         <nav className="flex-1 space-y-1 p-4">
-          {navItems.map(({ to, label, icon: Icon, disabled }) => (
-            <Link
-              key={to}
-              to={disabled ? "#" : to}
-              className={cn(
-                "flex items-center gap-3 rounded-md px-3 py-2 text-sm font-medium transition-colors",
-                disabled
-                  ? "cursor-not-allowed text-muted-foreground/50"
-                  : "text-muted-foreground hover:bg-accent hover:text-accent-foreground"
-              )}
-              onClick={(e) => disabled && e.preventDefault()}
-            >
-              <Icon className="h-4 w-4" />
-              {label}
-              {disabled && (
-                <span className="ml-auto text-[10px] uppercase tracking-wide text-muted-foreground">
-                  Soon
-                </span>
-              )}
-            </Link>
-          ))}
+          {navItems
+            .filter((item) => !item.adminOnly || isAdmin)
+            .map(({ to, label, icon: Icon }) => {
+            const isActive = location.pathname === to || location.pathname.startsWith(`${to}/`);
+            return (
+              <Link
+                key={to}
+                to={to}
+                className={cn(
+                  "flex items-center gap-3 rounded-md px-3 py-2 text-sm font-medium transition-colors",
+                  isActive
+                    ? "bg-accent text-accent-foreground"
+                    : "text-muted-foreground hover:bg-accent hover:text-accent-foreground"
+                )}
+              >
+                <Icon className="h-4 w-4" />
+                {label}
+              </Link>
+            );
+          })}
         </nav>
 
         <div className="border-t border-border p-4">

@@ -37,9 +37,31 @@ cd backend
 python -m venv .venv
 source .venv/bin/activate  # Windows: .venv\Scripts\activate
 pip install -e ".[dev]"
+```
+
+Ensure `.env` exists at the project root (`cp .env.example .env` from repo root).
+
+For **local** migrations (outside Docker), start Postgres first and use `localhost` in `DATABASE_URL`:
+
+```bash
+# From project root — start Postgres only
+docker compose up -d postgres
+
+# In .env, use the localhost DATABASE_URL line (see .env.example)
+# DATABASE_URL=postgresql+asyncpg://recruit:recruit_secret@localhost:5432/recruit_platform
+
+cd backend
 alembic upgrade head
 uvicorn app.main:app --reload
 ```
+
+When using **Docker Compose** for the full stack, migrations run automatically on backend startup.
+
+### Free AI testing (no API keys)
+
+- **Mock provider** — Settings → Mock → Save (instant, no setup)
+- **Ollama** — local open-source models: `docker compose --profile ollama up -d` then `docker compose exec ollama ollama pull llama3.2`
+- See `docs/modules/settings.md` for configuration details
 
 ### Frontend
 
@@ -64,10 +86,11 @@ cd frontend && npm run test
 | Module | Status |
 |--------|--------|
 | Authentication | ✅ Complete |
-| Dashboard | Pending |
-| Client Management | Pending |
-| Job Requirements | Pending |
-| Candidate Management | Pending |
+| Dashboard | ✅ Complete |
+| Client Management | ✅ Complete |
+| Job Requirements | ✅ Complete |
+| Candidate Management | ✅ Complete |
+| Settings (AI Provider) | ✅ Complete |
 
 ## Architecture
 

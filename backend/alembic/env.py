@@ -12,10 +12,25 @@ from app.core.config import get_settings
 from app.core.database import Base
 from app.models import (  # noqa: F401
     AuditLog,
+    Candidate,
+    CandidateApplication,
+    CandidateDocument,
+    Client,
+    ClientContact,
+    ClientLocation,
+    ClientNote,
+    JobRequirement,
+    JobRequirementAttachment,
+    ParsedResume,
     Permission,
     RefreshToken,
+    ResumeScore,
+    ResumeTemplate,
+    ResumeVersion,
     Role,
+    ScreeningInterview,
     Tenant,
+    TenantSettings,
     User,
 )
 

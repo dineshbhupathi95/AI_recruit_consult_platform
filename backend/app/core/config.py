@@ -1,17 +1,27 @@
 """Application configuration loaded from environment variables."""
 
 from functools import lru_cache
+from pathlib import Path
 from typing import Literal
 
 from pydantic import Field, field_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
+
+_BACKEND_DIR = Path(__file__).resolve().parent.parent.parent
+_PROJECT_ROOT = _BACKEND_DIR.parent
+
+
+def _resolve_env_files() -> tuple[str, ...]:
+    """Load .env from backend/ or project root (works when cwd is backend/)."""
+    candidates = (_BACKEND_DIR / ".env", _PROJECT_ROOT / ".env")
+    return tuple(str(path) for path in candidates if path.is_file())
 
 
 class Settings(BaseSettings):
     """Centralized application settings."""
 
     model_config = SettingsConfigDict(
-        env_file=".env",
+        env_file=_resolve_env_files() or (".env",),
         env_file_encoding="utf-8",
         case_sensitive=False,
         extra="ignore",
@@ -56,6 +66,27 @@ class Settings(BaseSettings):
 
     log_level: str = Field(default="INFO", alias="LOG_LEVEL")
     log_json: bool = Field(default=False, alias="LOG_JSON")
+
+    ai_provider: str = Field(default="openai", alias="AI_PROVIDER")
+    openai_api_key: str | None = Field(default=None, alias="OPENAI_API_KEY")
+    openai_model: str = Field(default="gpt-4o-mini", alias="OPENAI_MODEL")
+    openai_base_url: str = Field(default="https://api.openai.com/v1", alias="OPENAI_BASE_URL")
+    ai_request_timeout_seconds: int = Field(default=120, alias="AI_REQUEST_TIMEOUT_SECONDS")
+
+    gemini_api_key: str | None = Field(default=None, alias="GEMINI_API_KEY")
+    gemini_model: str = Field(default="gemini-2.0-flash", alias="GEMINI_MODEL")
+    gemini_base_url: str = Field(
+        default="https://generativelanguage.googleapis.com/v1beta/openai",
+        alias="GEMINI_BASE_URL",
+    )
+
+    groq_api_key: str | None = Field(default=None, alias="GROQ_API_KEY")
+    groq_model: str = Field(default="llama-3.1-8b-instant", alias="GROQ_MODEL")
+    groq_base_url: str = Field(default="https://api.groq.com/openai/v1", alias="GROQ_BASE_URL")
+
+    ollama_base_url: str = Field(default="http://localhost:11434/v1", alias="OLLAMA_BASE_URL")
+    ollama_model: str = Field(default="llama3.2", alias="OLLAMA_MODEL")
+    ollama_api_key: str | None = Field(default=None, alias="OLLAMA_API_KEY")
 
     @field_validator("database_url", mode="before")
     @classmethod
