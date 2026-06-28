@@ -42,3 +42,4 @@ Thumbs.db
 # MinIO / uploads
 uploads/
 storage/
+files/

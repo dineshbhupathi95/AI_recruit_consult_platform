@@ -57,6 +57,15 @@ class Settings(BaseSettings):
     minio_bucket: str = Field(default="recruit-platform", alias="MINIO_BUCKET")
     minio_secure: bool = Field(default=False, alias="MINIO_SECURE")
 
+    storage_backend: Literal["auto", "minio", "local"] = Field(
+        default="auto", alias="STORAGE_BACKEND"
+    )
+    local_files_dir: str = Field(
+        default="files",
+        alias="LOCAL_FILES_DIR",
+        description="Local file storage directory (relative to project root, or absolute path)",
+    )
+
     celery_broker_url: str = Field(
         default="redis://localhost:6379/1", alias="CELERY_BROKER_URL"
     )
@@ -94,6 +103,13 @@ class Settings(BaseSettings):
         if isinstance(value, str) and value.startswith("postgresql://"):
             return value.replace("postgresql://", "postgresql+asyncpg://", 1)
         return value
+
+    @property
+    def local_files_path(self) -> Path:
+        path = Path(self.local_files_dir)
+        if path.is_absolute():
+            return path
+        return _PROJECT_ROOT / path
 
     @property
     def cors_origins_list(self) -> list[str]:
