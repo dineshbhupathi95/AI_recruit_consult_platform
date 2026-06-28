@@ -28,9 +28,21 @@ docker compose up --build
    - API Docs: http://localhost:8000/docs
    - MinIO Console: http://localhost:9001
 
-## Development
+## Environment
 
-### Backend
+All API calls use one base URL from `src/config/api.ts`, driven by:
+
+```bash
+# frontend/.env (copy from .env.example)
+VITE_API_BASE_URL=http://localhost:8000
+```
+
+Do **not** include `/api/v1` — the app appends that automatically.
+
+**Vercel:** Project → Settings → Environment Variables → `VITE_API_BASE_URL` = your backend URL (e.g. `https://api.example.com`), then redeploy.
+
+**Docker:** `VITE_API_BASE_URL` is set in root `docker-compose.yml` for the frontend service.
+
 
 ```bash
 cd backend

@@ -1,11 +1,10 @@
 import axios, { AxiosError, InternalAxiosRequestConfig } from "axios";
+import { API_BASE_URL, API_V1_BASE_URL } from "@/config/api";
 import type { ApiError, TokenResponse } from "@/types/auth";
 import { useAuthStore } from "@/store/authStore";
 
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "http://localhost:8000";
-
 export const apiClient = axios.create({
-  baseURL: `${API_BASE_URL}/api/v1`,
+  baseURL: API_V1_BASE_URL,
   headers: { "Content-Type": "application/json" },
 });
 
